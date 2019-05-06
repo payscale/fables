@@ -1,0 +1,3 @@
+from typing import IO
+
+def is_encrypted(file: IO[bytes]) -> bool: ...
