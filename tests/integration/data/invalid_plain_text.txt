@@ -1,0 +1,3 @@
+header
+there are two hard things in computer science
+off by one errors, naming things, and cache invalidation

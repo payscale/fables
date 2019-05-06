@@ -1,0 +1,12 @@
+__pycache__
+*.pyc
+
+.vscode
+.venv
+.DS_STORE
+.pytest_cache
+.mypy_cache
+.coverage
+
+# Excel temporary files
+~$*.xls*
