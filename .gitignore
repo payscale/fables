@@ -10,3 +10,7 @@ __pycache__
 
 # Excel temporary files
 ~$*.xls*
+
+# Pycharm stuff
+.idea*
+.idea/*
