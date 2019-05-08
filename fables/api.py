@@ -20,6 +20,20 @@ from fables.parse import ParseResult, ParseVisitor
 
 
 def _check_file_size(name: str) -> Tuple[bool, int]:
+    """Function that returns a tuple(boolean, int), where
+    argument 1 (boolean) indicates if the filesize is larger than the MAX_FILE_SIZE,
+    argument 2 (int) is the filesize (bytes) of an file-object, given a file-location string.
+
+    Args:
+        name (str): String which is the file-object location.
+
+    Returns:
+        (boolean, int): boolean- indicator if file-object is larger than MAX_FILE_SIZE,
+            int- filesize in bytes.
+
+    Note: functions and classes that start with an underscore are ignored in the Sphinx documentation.
+
+    """
     file_size = os.stat(name).st_size
     return file_size > MAX_FILE_SIZE, file_size
 
@@ -90,6 +104,19 @@ def detect(
         passwords: Optional[Dict[str, str]] = None,
         stream_file_name: Optional[str] = None,
 ) -> FileNode:
+    """Function description here.
+
+    Args:
+        io (typing.Union of str, io-bytes object, None): description
+        * (additional arguments): description
+        calling_func_name (string): description
+        password (string): description
+        passwords (dictionary): description
+        stream_file_name (string): description
+
+    Returns:
+        Node-From-File object
+    """
     if calling_func_name is None:
         calling_func_name = 'detect'
     name, stream, passwords = _parse_user_input(
@@ -110,6 +137,19 @@ def parse(
         passwords: Optional[Dict[str, str]] = None,
         stream_file_name: Optional[str] = None,
 ) -> Iterable[ParseResult]:
+    """ Function Description here.
+
+    Args:
+        io typing.Union of (string, io-bytes object, None), Description
+        * additional arguments
+        tree (FileNode): Description
+        password (string): Description
+        passwords (dictionary): Description
+        stream_file_name (string): Description
+
+    Returns:
+        Iterable
+    """
     if tree is None:
         if io is None:
             raise ValueError(

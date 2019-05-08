@@ -19,3 +19,4 @@ dist/
 # Pycharm stuff
 .idea*
 .idea/*
+venv/*
