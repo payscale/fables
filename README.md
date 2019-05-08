@@ -92,3 +92,6 @@ Note all the coverage statistics are for statements.
 - We enforce flake8:
   - `flake8 .`
 
+### Run test, type checking, and linter all at once
+- `nox`
+
