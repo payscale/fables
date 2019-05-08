@@ -21,7 +21,7 @@ setuptools.setup(
     packages=["fables"],
     url="https://github.com/payscale/fables",
     author="PayScale, Inc.",
-    author_email="tomej2000@gmail.com",
+    author_email="pypi@payscale.com",
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.7",
