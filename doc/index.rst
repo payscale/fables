@@ -82,7 +82,7 @@ Updating Sphinx Documentation
 -----------------------------
 
 Our library is documented using Sphinx. One benefit of this approach is that it automatically pulls
-docstrings from your added functionality to create new documentation. Check the text_cleaning.py file
+docstrings from your added functionality to create new documentation. Check some of the file functions
 to get an idea of the format your docstrings should follow. Once your pull request for new functionality
 has been merged you can rebuild the documentation using the following steps:
 
@@ -109,7 +109,7 @@ also need to create an rst file for your module and place it under /docs/modules
 Need More Help?
 ---------------
 
-Just reach out to anyone on the DS team.
+Just reach out to anyone on the authoring team.
 
 
 License
