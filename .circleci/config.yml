@@ -16,7 +16,7 @@ jobs:
           command: |
             . .venv/bin/activate
             nox -s test
-            .venv/bin/coverage run -m pytest
+            .venv/bin/coverage run -m pytest --cov=fables tests/
             .venv/bin/coverage report
             .venv/bin/coverage html
       - store_artifacts:
