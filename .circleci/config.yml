@@ -15,11 +15,10 @@ jobs:
           name: test
           command: |
             . .venv/bin/activate
-            pip install '.[test]' --user
             nox -s test
-            $HOME/.local/bin/coverage run -m pytest
-            $HOME/.local/bin/coverage report
-            $HOME/.local/bin/coverage html
+            .venv/bin/coverage run -m pytest
+            .venv/bin/coverage report
+            .venv/bin/coverage html
       - store_artifacts:
           path: htmlcov
       - run:
