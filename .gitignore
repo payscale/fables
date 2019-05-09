@@ -8,6 +8,10 @@ __pycache__
 .mypy_cache
 .coverage
 .nox
+*.eggs
+*.egg-info
+build/
+dist/
 
 # Excel temporary files
 ~$*.xls*
