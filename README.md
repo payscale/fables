@@ -1,9 +1,8 @@
 # Fables - (F)ile T(ables)
 
-Coverage: <todo>
-
 Tests: [![CircleCI](https://circleci.com/gh/payscale/fables.svg?style=svg)](https://circleci.com/gh/payscale/fables)
 
+License: [![Apache2.0License](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
 
 
 ## For users:
