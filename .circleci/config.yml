@@ -13,10 +13,16 @@ jobs:
             pip install -r requirements.txt
       - run:
           name: test
-          command: nox -s test
+          command: |
+            . .venv/bin/activate
+            nox -s test
       - run:
           name: lint
-          command: nox -s lint
+          command: |
+            . .venv/bin/activate
+            nox -s lint
       - run:
           name: type check
-          command: nox -s type_check
+          command: |
+            . .venv/bin/activate
+            nox -s type_check
