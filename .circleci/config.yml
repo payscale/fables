@@ -15,6 +15,7 @@ jobs:
           name: test
           command: |
             . .venv/bin/activate
+            pip install '.[test]' --user
             nox -s test
             $HOME/.local/bin/coverage run -m pytest
             $HOME/.local/bin/coverage report
