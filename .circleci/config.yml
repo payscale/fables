@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7.2
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv .venv
+            . .venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: test
+          command: |
+            . .venv/bin/activate
+            nox -s test
+      - run:
+          name: lint
+          command: |
+            . .venv/bin/activate
+            nox -s lint
+      - run:
+          name: type check
+          command: |
+            . .venv/bin/activate
+            nox -s type_check
