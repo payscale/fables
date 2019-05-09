@@ -2,7 +2,7 @@
 
 ## For users:
 
-Parse all of the tabular data in the input file:
+Parse the tabular data in the input file:
 ```
 import fables
 
