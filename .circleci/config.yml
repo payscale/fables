@@ -16,6 +16,11 @@ jobs:
           command: |
             . .venv/bin/activate
             nox -s test
+            coverage run -m pytest
+            coverage report
+            coverage html
+      - store_artifacts:
+          path: htmlcov
       - run:
           name: lint
           command: |
