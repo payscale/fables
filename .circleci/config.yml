@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  test:
+    docker:
+      - image: cirlceci/python:3.7.2-stretch
+    steps:
+      - checkout
+      - run:
+        name: install python dependencies
+        command: |
+          python3 -m venv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt
+      - run:
+        name: test
+        command: |
+          nox -s test
+      - run:
+        name: lint
+        command: |
+          nox -s lint
+      - run:
+        name: type check
+        command: |
+          nox -s type_check
