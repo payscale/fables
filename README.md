@@ -1,8 +1,8 @@
 # Fables - (F)ile T(ables)
 
-Tests: [![CircleCI](https://circleci.com/gh/payscale/fables.svg?style=svg)](https://circleci.com/gh/payscale/fables)
-
-License: [![Apache2.0License](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
+[![CircleCI](https://circleci.com/gh/payscale/fables.svg?style=svg)](https://circleci.com/gh/payscale/fables)
+[![Apache2.0License](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 
 ## For users:
