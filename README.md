@@ -1,5 +1,11 @@
 # Fables - (F)ile T(ables)
 
+Coverage: <todo>
+
+Tests: [![CircleCI](https://circleci.com/gh/payscale/fables.svg?style=svg)](https://circleci.com/gh/payscale/fables)
+
+
+
 ## For users:
 
 Parse the tabular data in the input file:
