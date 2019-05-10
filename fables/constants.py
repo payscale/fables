@@ -5,7 +5,7 @@ the user.
 
 
 # These may get put into the zip file when compressed using finder on OSX.
-OS_PATTERNS_TO_SKIP = ['.DS_STORE', '.DS_Store', '__MACOSX']
+OS_PATTERNS_TO_SKIP = [".DS_STORE", ".DS_Store", "__MACOSX"]
 
 # Throw a ValueError when files of size > 1 GB are passed in.
 # The user can reset this var after importing fables, e.g.

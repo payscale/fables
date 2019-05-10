@@ -16,8 +16,10 @@ class Table:
     sheet: Optional[str] = None
 
     def __str__(self) -> str:
-        s = f'{self.__class__.__name__}(' + \
-            f'df=DataFrame(nrow={len(self.df)}, ncol={len(self.df.columns)}), ' + \
-            f"name='{self.name}', " + \
-            f"sheet='{self.sheet}')"
-        return s.replace("'None'", 'None')
+        s = (
+            f"{self.__class__.__name__}("
+            + f"df=DataFrame(nrow={len(self.df)}, ncol={len(self.df.columns)}), "
+            + f"name='{self.name}', "
+            + f"sheet='{self.sheet}')"
+        )
+        return s.replace("'None'", "None")

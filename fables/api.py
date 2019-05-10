@@ -5,14 +5,7 @@ Implements the two main function entry points for fables:
 
 import os
 from io import BufferedIOBase
-from typing import (
-    Dict,
-    IO,
-    Iterable,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Dict, IO, Iterable, Optional, Tuple, Union
 
 from fables.constants import MAX_FILE_SIZE
 from fables.tree import FileNode, node_from_file
@@ -32,11 +25,11 @@ def _check_stream_size(stream: IO[bytes]) -> Tuple[bool, int]:
 
 
 def _parse_user_input(
-        io: Union[str, IO[bytes], None],
-        calling_func_name: str,
-        password: Optional[str] = None,
-        passwords: Optional[Dict[str, str]] = {},
-        stream_file_name: Optional[str] = None,
+    io: Union[str, IO[bytes], None],
+    calling_func_name: str,
+    password: Optional[str] = None,
+    passwords: Optional[Dict[str, str]] = {},
+    stream_file_name: Optional[str] = None,
 ) -> Tuple[Optional[str], Optional[IO[bytes]], Dict[str, str]]:
     if isinstance(io, str):
         stream = None
@@ -49,18 +42,18 @@ def _parse_user_input(
     else:
         if not isinstance(io, BufferedIOBase):
             raise TypeError(
-                f"Argument io for '{calling_func_name}' must be instance of " +
-                "str or a subclass of 'io.BufferedIOBase'"
+                f"Argument io for '{calling_func_name}' must be instance of "
+                + "str or a subclass of 'io.BufferedIOBase'"
             )
         stream = io
-        name = getattr(stream, 'name', stream_file_name)
+        name = getattr(stream, "name", stream_file_name)
         size_is_too_big, size = _check_stream_size(stream)
 
     if size_is_too_big:
         raise ValueError(
-            f"In '{calling_func_name}', argument '{name}' has " +
-            f'size={size} > fables.MAX_FILE_SIZE = ' +
-            f'{MAX_FILE_SIZE} bytes'
+            f"In '{calling_func_name}', argument '{name}' has "
+            + f"size={size} > fables.MAX_FILE_SIZE = "
+            + f"{MAX_FILE_SIZE} bytes"
         )
 
     if passwords is not None and not isinstance(passwords, dict):
@@ -83,15 +76,15 @@ def _parse_user_input(
 
 
 def detect(
-        io: Union[str, IO[bytes], None],
-        *,
-        calling_func_name: Optional[str] = None,
-        password: Optional[str] = None,
-        passwords: Optional[Dict[str, str]] = None,
-        stream_file_name: Optional[str] = None,
+    io: Union[str, IO[bytes], None],
+    *,
+    calling_func_name: Optional[str] = None,
+    password: Optional[str] = None,
+    passwords: Optional[Dict[str, str]] = None,
+    stream_file_name: Optional[str] = None,
 ) -> FileNode:
     if calling_func_name is None:
-        calling_func_name = 'detect'
+        calling_func_name = "detect"
     name, stream, passwords = _parse_user_input(
         io=io,
         calling_func_name=calling_func_name,
@@ -103,22 +96,22 @@ def detect(
 
 
 def parse(
-        io: Union[str, IO[bytes], None] = None,
-        *,
-        tree: Optional[FileNode] = None,
-        password: Optional[str] = None,
-        passwords: Optional[Dict[str, str]] = None,
-        stream_file_name: Optional[str] = None,
+    io: Union[str, IO[bytes], None] = None,
+    *,
+    tree: Optional[FileNode] = None,
+    password: Optional[str] = None,
+    passwords: Optional[Dict[str, str]] = None,
+    stream_file_name: Optional[str] = None,
 ) -> Iterable[ParseResult]:
     if tree is None:
         if io is None:
             raise ValueError(
-                "One of parse() argumentes 'io' or 'tree' must " +
-                "be given a value that is not None"
+                "One of parse() argumentes 'io' or 'tree' must "
+                + "be given a value that is not None"
             )
         tree = detect(
             io=io,
-            calling_func_name='parse',
+            calling_func_name="parse",
             password=password,
             passwords=passwords,
             stream_file_name=stream_file_name,
