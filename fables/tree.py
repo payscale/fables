@@ -12,14 +12,7 @@ import io
 import os
 import zipfile
 from fnmatch import fnmatch
-from typing import (
-    Dict,
-    IO,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-)
+from typing import Dict, IO, Iterator, List, Optional, Tuple
 
 import magic
 from msoffcrypto import OfficeFile  # type: ignore
@@ -29,8 +22,9 @@ from fables.constants import OS_PATTERNS_TO_SKIP
 from fables.errors import ExtractError
 
 
-UNEXPECTED_DECRYPTION_EXCEPTION_MESSAGE = \
-    'Unexpected exception occured when decrypting: {0}. Exception: {1}.'
+UNEXPECTED_DECRYPTION_EXCEPTION_MESSAGE = (
+    "Unexpected exception occured when decrypting: {0}. Exception: {1}."
+)
 
 
 class IncorrectPassword(Exception):
@@ -61,30 +55,29 @@ class StreamManager:
 
         if self.name is None:
             raise RuntimeError(
-                "Cannot compute 'io.BufferedIOBase' for without " +
-                "'name' or 'stream' property"
+                "Cannot compute 'io.BufferedIOBase' for without "
+                + "'name' or 'stream' property"
             )
 
-        self.opened_stream = open(self.name, 'rb')
+        self.opened_stream = open(self.name, "rb")
         return self.opened_stream
 
     def __exit__(self, *exc) -> None:  # type: ignore
-        if self.opened_stream is not None and hasattr(self.opened_stream, 'close'):
+        if self.opened_stream is not None and hasattr(self.opened_stream, "close"):
             self.opened_stream.close()
 
 
 class FileNode:
-
     def __init__(
-            self,
-            *,
-            name: Optional[str] = None,
-            stream: Optional[IO[bytes]] = None,
-            mimetype: Optional[str] = None,
-            extension: Optional[str] = None,
-            passwords: Dict[str, str] = {},
+        self,
+        *,
+        name: Optional[str] = None,
+        stream: Optional[IO[bytes]] = None,
+        mimetype: Optional[str] = None,
+        extension: Optional[str] = None,
+        passwords: Dict[str, str] = {},
     ) -> None:
-        self.name = name or getattr(stream, 'name', None)
+        self.name = name or getattr(stream, "name", None)
         self._stream = stream
         self.mimetype = mimetype
         self.extension = extension
@@ -103,7 +96,7 @@ class FileNode:
         return StreamManager(name=self.name, stream=self._stream)
 
     @property
-    def children(self) -> Iterator['FileNode']:
+    def children(self) -> Iterator["FileNode"]:
         yield from []
 
     @property
@@ -131,7 +124,7 @@ class FileNode:
 
         match_metrics: List[Tuple[bool, int, str]] = []
         for path, password in self.passwords.items():
-            is_match = fnmatch(self.name, f'*{path}')
+            is_match = fnmatch(self.name, f"*{path}")
             match_metrics.append((is_match, len(path), password))
 
         if not match_metrics:
@@ -141,7 +134,7 @@ class FileNode:
         return sorted(match_metrics, reverse=True)[0][-1]
 
     def __str__(self) -> str:
-        return f'{self.__class__.__name__}(name={self.name}, mimetype={self.mimetype})'
+        return f"{self.__class__.__name__}(name={self.name}, mimetype={self.mimetype})"
 
 
 class MimeTypeFileNode(FileNode):
@@ -150,9 +143,7 @@ class MimeTypeFileNode(FileNode):
 
     @classmethod
     def is_my_mimetype_or_extension(
-            cls,
-            mimetype: Optional[str],
-            extension: Optional[str],
+        cls, mimetype: Optional[str], extension: Optional[str]
     ) -> bool:
         if mimetype is not None and mimetype in cls.MIMETYPES:
             if mimetype == cls.MIMETYPES[0]:
@@ -163,14 +154,14 @@ class MimeTypeFileNode(FileNode):
 
 
 class Zip(MimeTypeFileNode):
-    MIMETYPES = ['application/zip']
-    EXTENSIONS = ['zip']
+    MIMETYPES = ["application/zip"]
+    EXTENSIONS = ["zip"]
 
     @property
     def _bytes_password(self) -> Optional[bytes]:
         str_password = self.password
         if str_password is not None:
-            return str_password.encode('utf-8')
+            return str_password.encode("utf-8")
         return None
 
     @staticmethod
@@ -194,11 +185,13 @@ class Zip(MimeTypeFileNode):
                     zf.open(first_child_file, pwd=self._bytes_password)
                     return True
                 except RuntimeError as e:
-                    if 'Bad password for file' in str(e):
+                    if "Bad password for file" in str(e):
                         return False
                     else:
                         raise RuntimeError(
-                            UNEXPECTED_DECRYPTION_EXCEPTION_MESSAGE.format(self.name, str(e)),
+                            UNEXPECTED_DECRYPTION_EXCEPTION_MESSAGE.format(
+                                self.name, str(e)
+                            )
                         )
 
     @property
@@ -215,7 +208,9 @@ class Zip(MimeTypeFileNode):
             with self.stream as node_stream:
                 with zipfile.ZipFile(node_stream) as zf:
                     for child_file in zf.namelist():
-                        with zf.open(child_file, pwd=self._bytes_password) as child_stream:
+                        with zf.open(
+                            child_file, pwd=self._bytes_password
+                        ) as child_stream:
                             # TODO(Thomas: 3/5/2019):
                             #     Reading the zipfile bytes into a BytesIO stream
                             #     instead of using the default zipfile stream because
@@ -227,8 +222,7 @@ class Zip(MimeTypeFileNode):
                             bytes_stream = io.BytesIO(child_stream.read())
                             if self.name is not None:
                                 child_file_path = os.path.join(
-                                    os.path.basename(self.name),
-                                    child_file,
+                                    os.path.basename(self.name), child_file
                                 )
                                 yield node_from_file(
                                     name=child_file_path,
@@ -243,15 +237,12 @@ class Zip(MimeTypeFileNode):
                                 )
         except RuntimeError as e:
             extract_error = ExtractError(
-                message=str(e),
-                exception_type=type(e),
-                name=self.name,
+                message=str(e), exception_type=type(e), name=self.name
             )
             self.extract_errors.append(extract_error)
 
 
 class ExcelEncryptionMixin(FileNode):
-
     def __init__(self, **kwargs) -> None:  # type: ignore
         super().__init__(**kwargs)
         self._raw_stream_mgr: StreamManager = super().stream
@@ -269,13 +260,12 @@ class ExcelEncryptionMixin(FileNode):
         except Exception as e:
             # xlsx exception message: 'The file could not be decrypted with this password'
             # xls exception message:  'Failed to verify password'
-            if 'password' in str(e):
+            if "password" in str(e):
                 raise IncorrectPassword()
             else:
                 raise RuntimeError(
                     UNEXPECTED_DECRYPTION_EXCEPTION_MESSAGE.format(
-                        getattr(encrypted_stream, 'name', None),
-                        str(e),
+                        getattr(encrypted_stream, "name", None), str(e)
                     )
                 )
 
@@ -302,25 +292,24 @@ class ExcelEncryptionMixin(FileNode):
 
 class Xlsx(MimeTypeFileNode, ExcelEncryptionMixin):
     MIMETYPES = [
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/encrypted',
-        'application/zip',
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/encrypted",
+        "application/zip",
     ]
-    EXTENSIONS = ['xlsx']
+    EXTENSIONS = ["xlsx"]
 
 
 class Xls(MimeTypeFileNode, ExcelEncryptionMixin):
-    MIMETYPES = ['application/vnd.ms-excel', 'application/CDFV2']
-    EXTENSIONS = ['xls']
+    MIMETYPES = ["application/vnd.ms-excel", "application/CDFV2"]
+    EXTENSIONS = ["xls"]
 
 
 class Csv(MimeTypeFileNode):
-    MIMETYPES = ['application/csv', 'text/plain']
-    EXTENSIONS = ['csv', 'tsv', 'txt']
+    MIMETYPES = ["application/csv", "text/plain"]
+    EXTENSIONS = ["csv", "tsv", "txt"]
 
 
 class Directory(FileNode):
-
     @property
     def children(self) -> Iterator[FileNode]:
         for child_name in os.listdir(self.name):
@@ -347,18 +336,16 @@ def mimetype_from_stream(stream: Optional[IO[bytes]]) -> Optional[str]:
 def extension_from_name(name: str) -> Optional[str]:
     _, ext = os.path.splitext(name)
     if ext:
-        return ext.lstrip('.')
+        return ext.lstrip(".")
     else:
         return None
 
 
 def mimetype_and_extension(
-        *,
-        name: Optional[str] = None,
-        stream: Optional[IO[bytes]] = None,
+    *, name: Optional[str] = None, stream: Optional[IO[bytes]] = None
 ) -> Tuple[Optional[str], Optional[str]]:
     if name is not None and stream is None:
-        with open(name, 'rb') as byte_stream:
+        with open(name, "rb") as byte_stream:
             mimetype = mimetype_from_stream(byte_stream)
     else:
         mimetype = mimetype_from_stream(stream)
@@ -372,14 +359,12 @@ def mimetype_and_extension(
 
 
 def node_from_file(
-        *,
-        name: Optional[str] = None,
-        stream: Optional[IO[bytes]] = None,
-        passwords: Dict[str, str] = {},
+    *,
+    name: Optional[str] = None,
+    stream: Optional[IO[bytes]] = None,
+    passwords: Dict[str, str] = {},
 ) -> FileNode:
-    if name is not None and any(
-        pattern in name for pattern in OS_PATTERNS_TO_SKIP
-    ):
+    if name is not None and any(pattern in name for pattern in OS_PATTERNS_TO_SKIP):
         return Skip(name=name, stream=stream)
 
     if name is not None and os.path.isdir(name):

@@ -2,6 +2,12 @@ import nox
 
 
 @nox.session(python=["3.7"], reuse_venv=True)
+def blacken(session):
+    session.install("black")
+    session.run("black", "fables", "tests", "noxfile.py", "setup.py")
+
+
+@nox.session(python=["3.7"], reuse_venv=True)
 def test(session):
     session.install("pytest", "pytest-cov")
     session.install("-e", ".")
@@ -19,4 +25,3 @@ def lint(session):
 def type_check(session):
     session.install("mypy")
     session.run("mypy", "--strict", "fables")
-

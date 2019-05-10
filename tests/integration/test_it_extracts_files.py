@@ -11,14 +11,14 @@ def test_zip_children_nodes_have_file_name_for_named_stream():
         basic.csv
         basic.xlsx
     """
-    zip_file = 'basic.zip'
+    zip_file = "basic.zip"
     zip_path = os.path.join(DATA_DIR, zip_file)
     expected_children_names = {
-        os.path.join(zip_file, 'basic.csv'),
-        os.path.join(zip_file, 'basic.xlsx'),
+        os.path.join(zip_file, "basic.csv"),
+        os.path.join(zip_file, "basic.xlsx"),
     }
 
-    with open(zip_path, 'rb') as zip_stream:
+    with open(zip_path, "rb") as zip_stream:
         tree = fables.detect(zip_stream)
 
         children_names = set()
@@ -33,10 +33,10 @@ def test_zip_children_nodes_have_file_name_for_nameless_stream():
         basic.csv
         basic.xlsx
     """
-    zip_path = os.path.join(DATA_DIR, 'basic.zip')
-    expected_children_names = {'basic.csv', 'basic.xlsx'}
+    zip_path = os.path.join(DATA_DIR, "basic.zip")
+    expected_children_names = {"basic.csv", "basic.xlsx"}
 
-    with open(zip_path, 'rb') as zip_stream:
+    with open(zip_path, "rb") as zip_stream:
         nameless_stream = io.BytesIO(zip_stream.read())
         nameless_stream.seek(0)
 

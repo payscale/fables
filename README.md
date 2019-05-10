@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/payscale/fables.svg?style=svg)](https://circleci.com/gh/payscale/fables)
 [![Apache2.0License](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 
 ## For users:
