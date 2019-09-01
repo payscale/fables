@@ -28,7 +28,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering",
     ],
     install_requires=[
-        "pandas==0.23.4",
+        "pandas==0.25.1",
         "chardet==3.0.4",
         "python-magic==0.4.15",
         "xlrd==1.2.0",
