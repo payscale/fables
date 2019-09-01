@@ -21,7 +21,7 @@ def test_stream_manager_raises_runtime_error_for_only_none_args():
         with fables.StreamManager(name=None, stream=None):
             pass
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert "'name'" in exception_message
     assert "'stream'" in exception_message
     assert "io.BufferedIOBase" in exception_message
