@@ -455,7 +455,7 @@ def test_it_raises_a_value_error_for_a_file_name_that_does_not_exist_on_disk():
         for _ in fables.parse(io=missing_name):
             pass
 
-    assert "parse" in str(e)
+    assert "parse" in str(e.value)
 
 
 def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
@@ -466,8 +466,8 @@ def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
             for _ in fables.parse(io=textio):
                 pass
 
-    assert "parse" in str(e)
-    assert "io.BufferedIOBase" in str(e)
+    assert "parse" in str(e.value)
+    assert "io.BufferedIOBase" in str(e.value)
 
 
 def test_it_creates_a_parse_error_for_malformed_csv():
