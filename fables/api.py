@@ -5,7 +5,7 @@ Implements the two main function entry points for fables:
 
 import os
 from io import BufferedIOBase
-from typing import Dict, IO, Iterable, Optional, Tuple, Union
+from typing import Any, Dict, IO, Iterable, Optional, Tuple, Union
 
 from fables.constants import MAX_FILE_SIZE
 from fables.tree import FileNode, node_from_file
@@ -102,6 +102,7 @@ def parse(
     password: Optional[str] = None,
     passwords: Optional[Dict[str, str]] = None,
     stream_file_name: Optional[str] = None,
+    pandas_kwargs: Dict[str, Any] = {},
 ) -> Iterable[ParseResult]:
     if tree is None:
         if io is None:
@@ -117,5 +118,5 @@ def parse(
             stream_file_name=stream_file_name,
         )
 
-    visitor = ParseVisitor()
+    visitor = ParseVisitor(pandas_kwargs)
     yield from visitor.visit(tree)
