@@ -1,3 +1,4 @@
+import io
 import os
 
 import pytest
@@ -16,7 +17,7 @@ from tests.integration.constants import DATA_DIR
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "xlsx",
             0,
-        ),  # noqa: E501
+        ),
         ("encrypted.xlsx", fables.Xlsx, "application/encrypted", "xlsx", 0),
         ("basic.xls", fables.Xls, "application/vnd.ms-excel", "xls", 0),
         ("encrypted.xls", fables.Xls, "application/vnd.ms-excel", "xls", 0),
@@ -75,3 +76,9 @@ def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
 
     assert "detect" in str(e)
     assert "io.BufferedIOBase" in str(e)
+
+
+def test_it_detects_when_a_file_is_empty():
+    node = fables.detect(io.BytesIO(b""))
+    assert node.mimetype == "application/x-empty"
+    assert node.is_empty
