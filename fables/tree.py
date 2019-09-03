@@ -88,7 +88,7 @@ class FileNode:
         self._decrypted_stream: Optional[IO[bytes]] = None
 
     @property
-    def is_empty(self) -> bool:
+    def empty(self) -> bool:
         return self.mimetype == "application/x-empty"
 
     @property
