@@ -15,14 +15,14 @@ the visitor pattern in Python:
 """
 
 import csv
-from typing import IO, Iterable, Union
+from typing import Any, Dict, IO, Iterable, Union
 
 import xlrd  # type: ignore
 import pandas as pd  # type: ignore
 
-from fables.table import Table
 from fables.errors import ParseError
 from fables.results import ParseResult
+from fables.table import Table
 from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Skip
 
 
@@ -94,25 +94,27 @@ def post_process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def parse_csv(bytesio: IO[bytes]) -> pd.DataFrame:
+def parse_csv(bytesio: IO[bytes], pandas_kwargs: Dict[str, Any]) -> pd.DataFrame:
     try:
         delimiter = sniff_delimiter(bytesio)
     except csv.Error:
         delimiter = ","
-    df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter)
+    df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
     df = post_process_dataframe(df)
     return df
 
 
-def parse_excel_sheet(excel_file: pd.ExcelFile, sheet: str) -> pd.DataFrame:
-    df = excel_file.parse(sheet, skip_blank_lines=True)
+def parse_excel_sheet(
+    excel_file: pd.ExcelFile, sheet: str, pandas_kwargs: Dict[str, Any]
+) -> pd.DataFrame:
+    df = excel_file.parse(sheet, skip_blank_lines=True, **pandas_kwargs)
     df = post_process_dataframe(df)
     return df
 
 
 class ParseVisitor:
-    def __init__(self, store_tables: bool = False) -> None:
-        self.store_tables = store_tables
+    def __init__(self, pandas_kwargs: Dict[str, Any]) -> None:
+        self.pandas_kwargs = pandas_kwargs
 
     def visit(self, node: FileNode) -> Iterable[ParseResult]:
         visitor_method_name = "visit_" + node.__class__.__name__
@@ -124,7 +126,7 @@ class ParseVisitor:
         errors = []
         with node.stream as bytesio:
             try:
-                df = parse_csv(bytesio)
+                df = parse_csv(bytesio, self.pandas_kwargs)
                 table = Table(df=df, name=node.name)
                 tables.append(table)
             except Exception as e:
@@ -146,7 +148,7 @@ class ParseVisitor:
                 sheets = excel_file.sheet_names
                 for sheet in sheets:
                     try:
-                        df = parse_excel_sheet(excel_file, sheet)
+                        df = parse_excel_sheet(excel_file, sheet, self.pandas_kwargs)
                         table = Table(df=df, name=node.name, sheet=sheet)
                         tables.append(table)
                     except Exception as e:
