@@ -88,6 +88,10 @@ class FileNode:
         self._decrypted_stream: Optional[IO[bytes]] = None
 
     @property
+    def empty(self) -> bool:
+        return self.mimetype == "application/x-empty"
+
+    @property
     def stream(self) -> StreamManager:
         """Usage:
         >>> with node.stream as bytesio:

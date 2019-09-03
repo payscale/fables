@@ -43,4 +43,4 @@ __all__ = [
 ]
 
 # Note: When changing version also be sure to change the version in setup.py
-__version__ = "0.2.0"
+__version__ = "1.0.0"
