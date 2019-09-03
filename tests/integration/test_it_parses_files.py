@@ -1,6 +1,7 @@
 import os
 import xml
 
+import numpy as np
 import pytest
 import pandas as pd
 
@@ -455,7 +456,7 @@ def test_it_raises_a_value_error_for_a_file_name_that_does_not_exist_on_disk():
         for _ in fables.parse(io=missing_name):
             pass
 
-    assert "parse" in str(e)
+    assert "parse" in str(e.value)
 
 
 def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
@@ -466,8 +467,8 @@ def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
             for _ in fables.parse(io=textio):
                 pass
 
-    assert "parse" in str(e)
-    assert "io.BufferedIOBase" in str(e)
+    assert "parse" in str(e.value)
+    assert "io.BufferedIOBase" in str(e.value)
 
 
 def test_it_creates_a_parse_error_for_malformed_csv():
@@ -591,6 +592,16 @@ def test_it_parses_files_with_null_opening_rows(file_name, test_callable, expect
             _it_parses_an_excel_file_with_one_sheet,
             AB_DF,
         ),
+        (
+            "null_leading_col_with_left_header.xlsx",
+            _it_parses_an_excel_file_with_one_sheet,
+            ABC_DF,
+        ),
+        (
+            "null_leading_col_with_right_header.xlsx",
+            _it_parses_an_excel_file_with_one_sheet,
+            ABC_DF,
+        ),
     ],
 )
 def test_it_parses_files_with_null_leading_and_trailing_cols(
@@ -600,6 +611,24 @@ def test_it_parses_files_with_null_leading_and_trailing_cols(
     ,a,b,
     ,1,2,
     ,3,4,
+
+    or
+
+    ,header 1,,,
+    ,header 2,,,
+    ,,,,
+    ,a,b,c,
+    ,1,2,3,
+    ,4,5,6,
+
+    or
+
+    ,,,header 1,
+    ,,,header 2,
+    ,,,,
+    ,a,b,c,
+    ,1,2,3,
+    ,4,5,6,
     """
     path = os.path.join(DATA_DIR, file_name)
     test_callable(path, expected_df)
@@ -658,3 +687,48 @@ def test_it_parses_files_with_noisy_opening_rows(file_name, test_callable, expec
     """
     path = os.path.join(DATA_DIR, file_name)
     test_callable(path, expected_df)
+
+
+@pytest.mark.parametrize(
+    "file_name,pandas_kwargs",
+    [
+        ("na.xlsx", {"keep_default_na": False}),
+        ("na.csv", {"keep_default_na": False}),
+        ("na.xlsx", {}),
+        ("na.csv", {}),
+    ],
+)
+def test_it_parses_files_using_pandas_kwargs(file_name, pandas_kwargs):
+    """
+    Will parse to this if pandas kwarg keep_default_na is False:
+    a,b,c
+    1,2,N/A
+    4,5,N/A
+
+    Will parse to this if pandas kwarg keep_default_na is True
+    (it is True by default):
+    a,b,c
+    1,2,NaN
+    4,5,NaN
+    """
+    path = os.path.join(DATA_DIR, file_name)
+    parse_results = list(fables.parse(path, pandas_kwargs=pandas_kwargs))
+    assert len(parse_results) == 1
+    parse_result = parse_results[0]
+    assert len(parse_result.errors) == 0
+    tables = parse_result.tables
+    assert len(tables) == 1
+
+    df = tables[0].df
+
+    if pandas_kwargs == {}:
+        expected_df = pd.DataFrame(
+            columns=["a", "b", "c"], data=[[1, 2, np.nan], [4, 5, np.nan]]
+        )
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+    else:
+        assert pandas_kwargs == {"keep_default_na": False}
+        expected_df = pd.DataFrame(
+            columns=["a", "b", "c"], data=[[1, 2, "N/A"], [4, 5, "N/A"]]
+        )
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
