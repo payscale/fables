@@ -455,7 +455,7 @@ def test_it_raises_a_value_error_for_a_file_name_that_does_not_exist_on_disk():
         for _ in fables.parse(io=missing_name):
             pass
 
-    assert "parse" in str(e)
+    assert "parse" in str(e.value)
 
 
 def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
@@ -466,8 +466,8 @@ def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
             for _ in fables.parse(io=textio):
                 pass
 
-    assert "parse" in str(e)
-    assert "io.BufferedIOBase" in str(e)
+    assert "parse" in str(e.value)
+    assert "io.BufferedIOBase" in str(e.value)
 
 
 def test_it_creates_a_parse_error_for_malformed_csv():
@@ -591,6 +591,16 @@ def test_it_parses_files_with_null_opening_rows(file_name, test_callable, expect
             _it_parses_an_excel_file_with_one_sheet,
             AB_DF,
         ),
+        (
+            "null_leading_col_with_left_header.xlsx",
+            _it_parses_an_excel_file_with_one_sheet,
+            ABC_DF,
+        ),
+        (
+            "null_leading_col_with_right_header.xlsx",
+            _it_parses_an_excel_file_with_one_sheet,
+            ABC_DF,
+        ),
     ],
 )
 def test_it_parses_files_with_null_leading_and_trailing_cols(
@@ -600,6 +610,24 @@ def test_it_parses_files_with_null_leading_and_trailing_cols(
     ,a,b,
     ,1,2,
     ,3,4,
+
+    or
+
+    ,header 1,,,
+    ,header 2,,,
+    ,,,,
+    ,a,b,c,
+    ,1,2,3,
+    ,4,5,6,
+
+    or
+
+    ,,,header 1,
+    ,,,header 2,
+    ,,,,
+    ,a,b,c,
+    ,1,2,3,
+    ,4,5,6,
     """
     path = os.path.join(DATA_DIR, file_name)
     test_callable(path, expected_df)

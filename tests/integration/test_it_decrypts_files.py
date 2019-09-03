@@ -46,6 +46,6 @@ def test_it_raises_an_exception_when_decrypting_a_corrupt_file():
             with node.stream as node_stream:
                 node.decrypt(node_stream, "fables")
 
-    exception_msg = str(e)
+    exception_msg = str(e.value)
     assert corrupt_xlsx_path in exception_msg
     assert "Unexpected exception" in exception_msg

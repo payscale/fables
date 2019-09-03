@@ -47,7 +47,7 @@ def test_detect_raises_a_value_error_when_file_is_too_large(monkeypatch):
     with pytest.raises(ValueError) as e:
         fables.detect("file.csv")
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert "detect" in exception_message
     assert f"size={file_size} > fables.MAX_FILE_SIZE" in exception_message
 
@@ -80,7 +80,7 @@ def test_detect_raises_a_value_error_when_stream_is_too_large(monkeypatch):
     with pytest.raises(ValueError) as e:
         fables.detect(io=stream)
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert "detect" in exception_message
     assert f"size={stream_size} > fables.MAX_FILE_SIZE" in exception_message
 
@@ -89,7 +89,7 @@ def _it_raises_a_value_error_when_passwords_is_not_a_dict(callable):
     with pytest.raises(ValueError) as e:
         list(callable(io=io.BytesIO(b"file bytes"), passwords="fables"))
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert f"{callable.__name__}" in exception_message
 
 
@@ -105,7 +105,7 @@ def _it_raises_a_value_error_when_password_is_not_a_str(callable):
     with pytest.raises(ValueError) as e:
         list(callable(io=io.BytesIO(b"file bytes"), password={"filename": "fables"}))
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert f"{callable.__name__}" in exception_message
 
 
@@ -121,7 +121,7 @@ def test_parse_raises_value_error_when_no_io_or_tree_is_given():
     with pytest.raises(ValueError) as e:
         list(fables.parse(io=None, tree=None))
 
-    exception_message = str(e)
+    exception_message = str(e.value)
     assert "parse" in exception_message
     assert "io" in exception_message
     assert "tree" in exception_message

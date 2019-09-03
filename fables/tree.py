@@ -374,12 +374,13 @@ def node_from_file(
 
     for node_type in MimeTypeFileNode.__subclasses__():
         if node_type.is_my_mimetype_or_extension(mimetype, extension):
-            return node_type(
+            node: FileNode = node_type(
                 name=name,
                 stream=stream,
                 mimetype=mimetype,
                 extension=extension,
                 passwords=passwords,
             )
+            return node
 
     return Skip(name=name, stream=stream, mimetype=mimetype, extension=extension)

@@ -63,7 +63,8 @@ def test_it_raises_a_value_error_for_a_file_name_that_does_not_exist_on_disk():
     with pytest.raises(ValueError) as e:
         fables.detect(io=missing_name)
 
-    assert "detect" in str(e)
+    exception_msg = str(e.value)
+    assert "detect" in exception_msg
 
 
 def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
@@ -73,5 +74,6 @@ def test_it_raises_a_type_error_for_stream_not_read_in_bytes_mode():
         with pytest.raises(TypeError) as e:
             fables.detect(io=textio)
 
-    assert "detect" in str(e)
-    assert "io.BufferedIOBase" in str(e)
+    exception_msg = str(e.value)
+    assert "detect" in exception_msg
+    assert "io.BufferedIOBase" in exception_msg
