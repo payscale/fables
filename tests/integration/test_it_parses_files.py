@@ -732,3 +732,75 @@ def test_it_parses_files_using_pandas_kwargs(file_name, pandas_kwargs):
             columns=["a", "b", "c"], data=[[1, 2, "N/A"], [4, 5, "N/A"]]
         )
         pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+
+string_df = pd.DataFrame(
+    columns=["x", "y", "z"],
+    data=[["001", "a", "b"], ["002", "a", "b"], ["003", "a", "b"]],
+)
+numeric_df = pd.DataFrame(
+    columns=["x", "y", "z"], data=[[1, "a", "b"], [2, "a", "b"], [3, "a", "b"]]
+)
+
+
+@pytest.mark.parametrize(
+    "file_name,force_numeric,pandas_kwargs,expected_df",
+    [
+        ("string_vs_numeric.csv", False, {}, numeric_df),
+        ("string_vs_numeric.csv", False, {"dtype": str}, string_df),
+        ("string_vs_numeric.csv", True, {}, numeric_df),
+        ("string_vs_numeric.csv", True, {"dtype": str}, string_df),
+        ("string_vs_numeric_noise_before_header.csv", False, {}, string_df),
+        ("string_vs_numeric_noise_before_header.csv", False, {"dtype": str}, string_df),
+        ("string_vs_numeric_noise_before_header.csv", True, {}, numeric_df),
+        ("string_vs_numeric_noise_before_header.csv", True, {"dtype": str}, numeric_df),
+        ("string_vs_numeric.xlsx", False, {}, numeric_df),
+        ("string_vs_numeric.xlsx", False, {"dtype": str}, string_df),
+        ("string_vs_numeric.xlsx", True, {}, numeric_df),
+        ("string_vs_numeric.xlsx", True, {"dtype": str}, string_df),
+        ("string_vs_numeric_noise_before_header.xlsx", False, {}, string_df),
+        (
+            "string_vs_numeric_noise_before_header.xlsx",
+            False,
+            {"dtype": str},
+            string_df,
+        ),
+        ("string_vs_numeric_noise_before_header.xlsx", True, {}, numeric_df),
+        (
+            "string_vs_numeric_noise_before_header.xlsx",
+            True,
+            {"dtype": str},
+            numeric_df,
+        ),
+    ],
+)
+def test_force_numeric(file_name, force_numeric, pandas_kwargs, expected_df):
+    """
+    a,,
+    ,,
+    ,,
+    x,y,z
+    001,a,b
+    002,a,b
+    003,a,b
+
+    and
+
+    x,y,z
+    001,a,b
+    002,a,b
+    003,a,b
+    """
+    path = os.path.join(DATA_DIR, file_name)
+    parse_results = list(
+        fables.parse(path, force_numeric=force_numeric, pandas_kwargs=pandas_kwargs)
+    )
+    assert len(parse_results) == 1
+    parse_result = parse_results[0]
+    assert len(parse_result.errors) == 0
+    tables = parse_result.tables
+    assert len(tables) == 1
+
+    df = tables[0].df
+
+    pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)

@@ -103,6 +103,7 @@ def parse(
     password: Optional[str] = None,
     passwords: Optional[Dict[str, str]] = None,
     stream_file_name: Optional[str] = None,
+    force_numeric: bool = True,
     pandas_kwargs: Dict[str, Any] = {},
 ) -> Iterable[ParseResult]:
     if tree is None:
@@ -119,5 +120,5 @@ def parse(
             stream_file_name=stream_file_name,
         )
 
-    visitor = ParseVisitor(pandas_kwargs)
+    visitor = ParseVisitor(force_numeric=force_numeric, pandas_kwargs=pandas_kwargs)
     yield from visitor.visit(tree)

@@ -41,7 +41,7 @@ def sniff_delimiter(bytesio: IO[bytes]) -> str:
     return dialect.delimiter
 
 
-def remove_data_before_header(df: pd.DataFrame) -> pd.DataFrame:
+def remove_data_before_header(df: pd.DataFrame, force_numeric: bool) -> pd.DataFrame:
     num_cols = len(df.columns)
     pre_header_row_removal_was_needed = False
     while (
@@ -64,7 +64,7 @@ def remove_data_before_header(df: pd.DataFrame) -> pd.DataFrame:
         # Replace the headers with the first row
         df.columns = df.iloc[0].values
         df.drop(df.index[0], inplace=True)
-    if pre_header_row_removal_was_needed:
+    if pre_header_row_removal_was_needed and force_numeric:
         for col in df.columns:
             # Try to convert columns back to numeric type, skipping those that
             # can't be converted. With the initial parse containing pre-header
@@ -75,8 +75,8 @@ def remove_data_before_header(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def post_process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    df = remove_data_before_header(df)
+def post_process_dataframe(df: pd.DataFrame, force_numeric: bool) -> pd.DataFrame:
+    df = remove_data_before_header(df, force_numeric)
     num_rows_before = len(df)
     if num_rows_before:
         # Remove rows that have only nulls.
@@ -94,26 +94,35 @@ def post_process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def parse_csv(bytesio: IO[bytes], pandas_kwargs: Dict[str, Any]) -> pd.DataFrame:
+def parse_csv(
+    bytesio: IO[bytes], *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
+) -> pd.DataFrame:
     try:
         delimiter = sniff_delimiter(bytesio)
     except csv.Error:
         delimiter = ","
     df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
-    df = post_process_dataframe(df)
+    df = post_process_dataframe(df, force_numeric)
     return df
 
 
 def parse_excel_sheet(
-    excel_file: pd.ExcelFile, sheet: str, pandas_kwargs: Dict[str, Any]
+    excel_file: pd.ExcelFile,
+    sheet: str,
+    *,
+    force_numeric: bool = True,
+    pandas_kwargs: Dict[str, Any],
 ) -> pd.DataFrame:
     df = excel_file.parse(sheet, skip_blank_lines=True, **pandas_kwargs)
-    df = post_process_dataframe(df)
+    df = post_process_dataframe(df, force_numeric)
     return df
 
 
 class ParseVisitor:
-    def __init__(self, pandas_kwargs: Dict[str, Any]) -> None:
+    def __init__(
+        self, *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
+    ) -> None:
+        self.force_numeric = force_numeric
         self.pandas_kwargs = pandas_kwargs
 
     def visit(self, node: FileNode) -> Iterable[ParseResult]:
@@ -126,7 +135,11 @@ class ParseVisitor:
         errors = []
         with node.stream as bytesio:
             try:
-                df = parse_csv(bytesio, self.pandas_kwargs)
+                df = parse_csv(
+                    bytesio,
+                    force_numeric=self.force_numeric,
+                    pandas_kwargs=self.pandas_kwargs,
+                )
                 table = Table(df=df, name=node.name)
                 tables.append(table)
             except Exception as e:
@@ -148,7 +161,12 @@ class ParseVisitor:
                 sheets = excel_file.sheet_names
                 for sheet in sheets:
                     try:
-                        df = parse_excel_sheet(excel_file, sheet, self.pandas_kwargs)
+                        df = parse_excel_sheet(
+                            excel_file,
+                            sheet,
+                            force_numeric=self.force_numeric,
+                            pandas_kwargs=self.pandas_kwargs,
+                        )
                         table = Table(df=df, name=node.name, sheet=sheet)
                         tables.append(table)
                     except Exception as e:
