@@ -64,14 +64,21 @@ def remove_data_before_header(df: pd.DataFrame, force_numeric: bool) -> pd.DataF
         # Replace the headers with the first row
         df.columns = df.iloc[0].values
         df.drop(df.index[0], inplace=True)
-    if pre_header_row_removal_was_needed and force_numeric:
-        for col in df.columns:
-            # Try to convert columns back to numeric type, skipping those that
-            # can't be converted. With the initial parse containing pre-header
-            # data, all columns will have had a string row containing the
-            # read header, so all columns in the DataFrame would be rounded
-            # up to string type.
-            df[col] = pd.to_numeric(df[col], errors="ignore")
+    if pre_header_row_removal_was_needed:
+        if not len(df):
+            raise ValueError(
+                "Error during pre-header row removal:"
+                " Reached end of file with no valid header row found."
+            )
+
+        if force_numeric:
+            for col in df.columns:
+                # Try to convert columns back to numeric type, skipping those that
+                # can't be converted. With the initial parse containing pre-header
+                # data, all columns will have had a string row containing the
+                # read header, so all columns in the DataFrame would be rounded
+                # up to string type.
+                df[col] = pd.to_numeric(df[col], errors="ignore")
     return df
 
 
