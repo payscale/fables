@@ -513,6 +513,35 @@ def test_it_creates_a_parse_error_for_corrupt_file():
     assert "not well-formed" in error.message
 
 
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "more_null_middle_cols_than_non_null_cols.csv",
+        "more_null_middle_cols_than_non_null_cols.xlsx",
+    ]
+)
+def test_it_creates_a_parse_error_for_no_valid_headers(file_name):
+    file_path = os.path.join(DATA_DIR, file_name)
+
+    parse_results = list(fables.parse(io=file_path))
+    assert len(parse_results) == 1
+
+    parse_result = parse_results[0]
+    assert parse_result.name == file_path
+
+    tables = parse_result.tables
+    assert len(tables) == 0
+
+    errors = parse_result.errors
+    assert len(errors) == 1
+
+    error = errors[0]
+    assert error.name == file_path
+
+    assert error.exception_type is ValueError
+    assert "Error during pre-header row removal" in error.message
+
+
 def test_it_parses_a_xls_with_no_extension():
     xls_name = os.path.join(DATA_DIR, "basic_xls_with_no_extension")
     _it_parses_an_excel_file_with_one_sheet(xls_name, AB_DF)
