@@ -144,15 +144,23 @@ class FileNode:
 class MimeTypeFileNode(FileNode):
     MIMETYPES: List[str] = []
     EXTENSIONS: List[str] = []
+    EXTENSIONS_TO_EXCLUDE: List[str] = []
 
     @classmethod
     def is_my_mimetype_or_extension(
         cls, mimetype: Optional[str], extension: Optional[str]
     ) -> bool:
-        if mimetype is not None and mimetype in cls.MIMETYPES:
-            if mimetype == cls.MIMETYPES[0]:
+        mimetype = mimetype or "_"
+        extension = extension or "_"
+        if mimetype in cls.MIMETYPES:
+            # trust the best mimetype match except when the extension is exluded
+            if (
+                mimetype == cls.MIMETYPES[0]
+                and extension not in cls.EXTENSIONS_TO_EXCLUDE
+            ):
                 return True
-            elif extension is not None and extension.lower() in cls.EXTENSIONS:
+            # extension is fine as long as we already matched some acceptable mimetype
+            elif extension.lower() in cls.EXTENSIONS:
                 return True
         return False
 
@@ -160,6 +168,7 @@ class MimeTypeFileNode(FileNode):
 class Zip(MimeTypeFileNode):
     MIMETYPES = ["application/zip"]
     EXTENSIONS = ["zip"]
+    EXTENSIONS_TO_EXCLUDE = ["xlsx"]
 
     @property
     def _bytes_password(self) -> Optional[bytes]:

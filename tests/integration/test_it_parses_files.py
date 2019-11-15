@@ -518,7 +518,7 @@ def test_it_creates_a_parse_error_for_corrupt_file():
     [
         "more_null_middle_cols_than_non_null_cols.csv",
         "more_null_middle_cols_than_non_null_cols.xlsx",
-    ]
+    ],
 )
 def test_it_creates_a_parse_error_for_no_valid_headers(file_name):
     file_path = os.path.join(DATA_DIR, file_name)
