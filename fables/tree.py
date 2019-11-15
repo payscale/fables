@@ -151,7 +151,7 @@ class MimeTypeFileNode(FileNode):
         cls, mimetype: Optional[str], extension: Optional[str]
     ) -> bool:
         mimetype = mimetype or "_"
-        extension = extension or "_"
+        extension = (extension or "_").lower()
         if mimetype in cls.MIMETYPES:
             # trust the best mimetype match except when the extension is exluded
             if (
@@ -160,7 +160,7 @@ class MimeTypeFileNode(FileNode):
             ):
                 return True
             # extension is fine as long as we already matched some acceptable mimetype
-            elif extension.lower() in cls.EXTENSIONS:
+            elif extension in cls.EXTENSIONS:
                 return True
         return False
 
