@@ -19,6 +19,7 @@ from tests.integration.constants import DATA_DIR
             0,
         ),
         ("encrypted.xlsx", fables.Xlsx, "application/encrypted", "xlsx", 0),
+        ("xlsx_with_zip_mimetype.xlsx", fables.Xlsx, "application/zip", "xlsx", 0),
         ("basic.xls", fables.Xls, "application/vnd.ms-excel", "xls", 0),
         ("encrypted.xls", fables.Xls, "application/vnd.ms-excel", "xls", 0),
         ("basic.zip", fables.Zip, "application/zip", "zip", 2),
