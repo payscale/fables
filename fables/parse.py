@@ -124,6 +124,7 @@ def parse_excel_sheet(
     df = post_process_dataframe(df, force_numeric)
     return df
 
+
 class ParseVisitor:
     def __init__(
         self, *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
@@ -161,11 +162,11 @@ class ParseVisitor:
 
         with node.stream as bytesio:
             try:
-                if str(node.extension).lower() == 'xlsb':
-                    excel_file = pd.ExcelFile(bytesio.read(), engine='pyxlsb')
+                if str(node.extension).lower() == "xlsb":
+                    excel_file = pd.ExcelFile(bytesio.read(), engine="pyxlsb")
                 else:
                     workbook = xlrd.open_workbook(file_contents=bytesio.read())
-                    excel_file = pd.ExcelFile(workbook, engine='xlrd')
+                    excel_file = pd.ExcelFile(workbook, engine="xlrd")
                 sheets = excel_file.sheet_names
                 for sheet in sheets:
                     try:

@@ -309,7 +309,7 @@ class Xlsx(MimeTypeFileNode, ExcelEncryptionMixin):
         "application/encrypted",
         "application/zip",
     ]
-    EXTENSIONS = ["xlsx", 'xlsb']
+    EXTENSIONS = ["xlsx", "xlsb"]
 
 
 class Xls(MimeTypeFileNode, ExcelEncryptionMixin):

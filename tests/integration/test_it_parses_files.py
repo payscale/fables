@@ -95,14 +95,17 @@ def test_it_parses_a_xlsx_with_one_sheet():
     xlsx_name = os.path.join(DATA_DIR, "basic.xlsx")
     _it_parses_an_excel_file_with_one_sheet(xlsx_name, AB_DF)
 
+
 def test_it_parses_a_xlsb_with_one_sheet():
     xlsb_name = os.path.join(DATA_DIR, "basic.xlsb")
     _it_parses_an_excel_file_with_one_sheet(xlsb_name, AB_DF)
+
 
 def test_it_parses_a_xlsb_with_only_a_header():
     only_xlsb_name = os.path.join(DATA_DIR, "only_header.xlsb")
     expected_df = pd.DataFrame(columns=["a", "b"], data=[])
     _it_parses_an_excel_file_with_one_sheet(only_xlsb_name, expected_df)
+
 
 def test_it_parses_a_xlsb_with_many_sheets():
     xlsb_name = os.path.join(DATA_DIR, "two_sheets.xlsb")
