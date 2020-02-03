@@ -168,7 +168,7 @@ class MimeTypeFileNode(FileNode):
 class Zip(MimeTypeFileNode):
     MIMETYPES = ["application/zip"]
     EXTENSIONS = ["zip"]
-    EXTENSIONS_TO_EXCLUDE = ["xlsx"]
+    EXTENSIONS_TO_EXCLUDE = ["xlsx", "xlsb"]
 
     @property
     def _bytes_password(self) -> Optional[bytes]:
@@ -309,7 +309,7 @@ class Xlsx(MimeTypeFileNode, ExcelEncryptionMixin):
         "application/encrypted",
         "application/zip",
     ]
-    EXTENSIONS = ["xlsx"]
+    EXTENSIONS = ["xlsx", 'xlsb']
 
 
 class Xls(MimeTypeFileNode, ExcelEncryptionMixin):
