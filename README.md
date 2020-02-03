@@ -5,10 +5,10 @@
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-
 ## For users:
 
 Parse the tabular data in the input file:
+
 ```
 import fables
 
@@ -21,6 +21,7 @@ for parse_result in fables.parse('myfile.zip'):
 ```
 
 Inspect the contents of the input file:
+
 ```
 node = fables.detect('myfile.zip')
 print(node.name)
@@ -33,19 +34,23 @@ for child in node.children:
 
 Note if you've already discovered the input tree from `detect()`,
 you can pass it into `parse()`:
+
 ```
 parse_results = parse(tree=node)
 ```
 
-Handling encrypted `zip`, `xlsx`, and `xls` files:
+Handling encrypted `zip`, `xlsx`, `xlsb`, and `xls` files:
+
 ```
 node = fables.detect('encrypted.xlsx')
 assert node.encrypted
 node.add_password('encrypted.xlsx', 'fables')
 assert not node.encrypted
 ```
-You can also supply a passwords dictionary (filename -> password) 
+
+You can also supply a passwords dictionary (filename -> password)
 into detect and parse:
+
 ```
 node = fables.detect(
     'encrypted.zip',
@@ -65,8 +70,16 @@ parse_results = fables.parse(
 )
 ```
 
+## Seeing is believing:
+
+Clone the repository & run the example file by executing the example.py script with the following command:
+
+```
+python3 example.py
+```
 
 ### Installation
+
 The python library [`python-magic`](https://github.com/ahupp/python-magic)
 requires additional system dependencies. There are installation instructions
 there, but here are recommended routes to try:
@@ -74,14 +87,15 @@ there, but here are recommended routes to try:
 - on OSX: `brew install libmagic`.
 
 - on Windows: [this](https://pypi.org/project/python-magic-bin/)
-`pip install python-magic-bin` will install a built version using
-ctypes to access the libmagic file type identification library.
+  `pip install python-magic-bin` will install a built version using
+  ctypes to access the libmagic file type identification library.
 
 Then `pip install -r requirements.txt` should do the trick.
 
 ## For contributors:
 
 ### Tests
+
 - all tests: `pytest`
   - coverage: `pytest --cov=fables tests`
 - integration: `pytest tests/integration`
@@ -92,12 +106,14 @@ Then `pip install -r requirements.txt` should do the trick.
 Note all the coverage statistics are for statements.
 
 ### Type checking with mypy
-- `mypy fables` 
+
+- `mypy fables`
 
 ### Linting
+
 - We enforce flake8:
   - `flake8 .`
 
 ### Run test, type checking, and linter all at once
-- `nox`
 
+- `nox`
