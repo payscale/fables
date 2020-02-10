@@ -309,7 +309,19 @@ class Xlsx(MimeTypeFileNode, ExcelEncryptionMixin):
         "application/encrypted",
         "application/zip",
     ]
-    EXTENSIONS = ["xlsx", "xlsb"]
+    EXTENSIONS = ["xlsx"]
+    EXTENSIONS_TO_EXCLUDE = ["xlsb"]
+
+
+class Xlsb(MimeTypeFileNode, ExcelEncryptionMixin):
+    MIMETYPES = [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+        "application/encrypted",
+        "application/zip",
+    ]
+    EXTENSIONS = ["xlsb"]
+    EXTENSIONS_TO_EXCLUDE = ["xlsx"]
 
 
 class Xls(MimeTypeFileNode, ExcelEncryptionMixin):
