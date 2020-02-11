@@ -23,7 +23,7 @@ import pandas as pd  # type: ignore
 from fables.errors import ParseError
 from fables.results import ParseResult
 from fables.table import Table
-from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Skip
+from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Xlsb, Skip
 
 
 ACCEPTED_DELIMITERS = {",", "\t", ";", ":", "|"}
@@ -156,15 +156,17 @@ class ParseVisitor:
                 errors.append(parse_error)
         yield ParseResult(name=node.name, tables=tables, errors=errors)
 
-    def _visit_excel(self, node: Union[Xls, Xlsx]) -> Iterable[ParseResult]:
+    def _visit_excel(self, node: Union[Xls, Xlsx, Xlsb]) -> Iterable[ParseResult]:
         tables = []
         errors = []
 
         with node.stream as bytesio:
-
             try:
-                workbook = xlrd.open_workbook(file_contents=bytesio.read())
-                excel_file = pd.ExcelFile(workbook, engine="xlrd")
+                if isinstance(node, Xlsb):
+                    excel_file = pd.ExcelFile(bytesio.read(), engine="pyxlsb")
+                else:
+                    workbook = xlrd.open_workbook(file_contents=bytesio.read())
+                    excel_file = pd.ExcelFile(workbook, engine="xlrd")
                 sheets = excel_file.sheet_names
                 for sheet in sheets:
                     try:
@@ -197,6 +199,9 @@ class ParseVisitor:
         yield from self._visit_excel(node)
 
     def visit_Xlsx(self, node: Xlsx) -> Iterable[ParseResult]:
+        yield from self._visit_excel(node)
+
+    def visit_Xlsb(self, node: Xlsb) -> Iterable[ParseResult]:
         yield from self._visit_excel(node)
 
     def visit_Zip(self, node: Zip) -> Iterable[ParseResult]:

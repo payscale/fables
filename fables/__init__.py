@@ -13,6 +13,7 @@ from fables.tree import (
     Csv,
     Xls,
     Xlsx,
+    Xlsb,
     Skip,
     mimetype_from_stream,
     mimetype_and_extension,
@@ -32,6 +33,7 @@ __all__ = [
     "Csv",
     "Xls",
     "Xlsx",
+    "Xlsb",
     "Skip",
     "mimetype_from_stream",
     "mimetype_and_extension",
@@ -43,4 +45,4 @@ __all__ = [
 ]
 
 # Note: When changing version also be sure to change the version in setup.py
-__version__ = "1.1.2"
+__version__ = "1.2.2"

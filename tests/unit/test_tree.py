@@ -10,6 +10,7 @@ from tests.context import fables
         ("basic.csv.xlsx", "xlsx"),
         ("basic", None),
         (".gitignore", None),
+        ("basic.xlsb", "xlsb"),
     ],
 )
 def test_extension_from_name(name, expected_extension):

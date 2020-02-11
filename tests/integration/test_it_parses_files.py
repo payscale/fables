@@ -96,6 +96,44 @@ def test_it_parses_a_xlsx_with_one_sheet():
     _it_parses_an_excel_file_with_one_sheet(xlsx_name, AB_DF)
 
 
+def test_it_parses_a_xlsb_with_one_sheet():
+    xlsb_name = os.path.join(DATA_DIR, "basic.xlsb")
+    _it_parses_an_excel_file_with_one_sheet(xlsb_name, AB_DF)
+
+
+def test_it_parses_a_xlsb_with_only_a_header():
+    only_xlsb_name = os.path.join(DATA_DIR, "only_header.xlsb")
+    expected_df = pd.DataFrame(columns=["a", "b"], data=[])
+    _it_parses_an_excel_file_with_one_sheet(only_xlsb_name, expected_df)
+
+
+def test_it_parses_a_xlsb_with_many_sheets():
+    xlsb_name = os.path.join(DATA_DIR, "two_sheets.xlsb")
+
+    parse_results = list(fables.parse(io=xlsb_name))
+
+    assert len(parse_results) == 1
+
+    parse_result = parse_results[0]
+    assert parse_result.name == xlsb_name
+    tables = parse_result.tables
+    errors = parse_result.errors
+    assert len(tables) == 2
+    assert len(errors) == 0
+
+    table1, table2 = tables
+    assert table1.name == xlsb_name
+    assert table1.sheet == "Sheet1"
+    assert table2.name == xlsb_name
+    assert table2.sheet == "Sheet2"
+
+    expected_sheet1_df = AB_DF
+    pd.testing.assert_frame_equal(table1.df, expected_sheet1_df, check_dtype=False)
+
+    expected_sheet2_df = pd.DataFrame(columns=["c", "d"], data=[[5, 6], [7, 8]])
+    pd.testing.assert_frame_equal(table2.df, expected_sheet2_df, check_dtype=False)
+
+
 def test_it_parses_a_xlsx_with_many_sheets():
     xlsx_name = os.path.join(DATA_DIR, "two_sheets.xlsx")
 
