@@ -11,13 +11,6 @@ def blacken(session):
 
 
 @nox.session(python=py_versions, reuse_venv=True)
-def test(session):
-    session.install("pytest", "pytest-cov")
-    session.install("-e", ".")
-    session.run("pytest", "--cov=fables")
-
-
-@nox.session(python=py_versions, reuse_venv=True)
 def lint(session):
     session.install("flake8")
     session.run("flake8", "fables")
@@ -28,3 +21,11 @@ def lint(session):
 def type_check(session):
     session.install("mypy")
     session.run("mypy", "--strict", "fables")
+
+
+@nox.session(python=py_versions, reuse_venv=True)
+@nox.parametrize("pandas", ["0.25.1", "1.0.1"])
+def test(session, pandas):
+    session.install("pytest", "pytest-cov")
+    session.install("-e", ".")
+    session.run("pytest", "--cov=fables")
