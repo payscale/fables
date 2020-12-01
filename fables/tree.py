@@ -351,7 +351,7 @@ def mimetype_from_stream(stream: Optional[IO[bytes]]) -> Optional[str]:
     if stream is None:
         return None
 
-    mimebytes = stream.read(2048)
+    mimebytes = stream.read(30000)
     mimetype = magic.from_buffer(mimebytes, mime=True)
     stream.seek(0)
 
