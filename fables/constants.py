@@ -15,3 +15,8 @@ OS_PATTERNS_TO_SKIP = [".DS_STORE", ".DS_Store", "__MACOSX"]
 >>> fables.detect('a_really_big_csv.csv')
 """
 MAX_FILE_SIZE = 1024 ** 3  # bytes -> 1 GB
+
+# Number of bytes used to determine a mimetype from an io-stream. 30k was
+# found to accurately set mimetypes as a result of fables tests. User can
+# reset this var the same as MAX_FILE_SIZE.
+NUM_OF_BYTES_FOR_MIMETYPE = 30000
