@@ -18,7 +18,7 @@ import magic
 from msoffcrypto import OfficeFile  # type: ignore
 from msoffcrypto.__main__ import is_encrypted
 
-from fables.constants import OS_PATTERNS_TO_SKIP
+from fables.constants import OS_PATTERNS_TO_SKIP, NUM_BYTES_FOR_MIMETYPE_DETECTION
 from fables.errors import ExtractError
 
 
@@ -351,7 +351,7 @@ def mimetype_from_stream(stream: Optional[IO[bytes]]) -> Optional[str]:
     if stream is None:
         return None
 
-    mimebytes = stream.read()
+    mimebytes = stream.read(NUM_BYTES_FOR_MIMETYPE_DETECTION)
     mimetype = magic.from_buffer(mimebytes, mime=True)
     stream.seek(0)
 
