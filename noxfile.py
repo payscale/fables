@@ -6,7 +6,7 @@ py_versions = ["3.7.4", "3.8.0", "3.8.1"]
 
 @nox.session(python=py_versions, reuse_venv=True)
 def blacken(session):
-    session.install("black")
+    session.install("black==19.10b0")
     session.run("black", "fables", "tests", "noxfile.py", "setup.py")
 
 
