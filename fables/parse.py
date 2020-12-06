@@ -109,6 +109,7 @@ def parse_csv(
     except csv.Error:
         delimiter = ","
     df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
+    bytesio.seek(0)
     df = post_process_dataframe(df, force_numeric)
     return df
 
