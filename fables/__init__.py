@@ -45,4 +45,4 @@ __all__ = [
 ]
 
 # Note: When changing version also be sure to change the version in setup.py
-__version__ = "1.2.1"
+__version__ = "1.2.2"

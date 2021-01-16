@@ -83,6 +83,13 @@ def remove_data_before_header(df: pd.DataFrame, force_numeric: bool) -> pd.DataF
 
 
 def post_process_dataframe(df: pd.DataFrame, force_numeric: bool) -> pd.DataFrame:
+    # Remove columns that have no header and have only null data.
+    for col in df.columns:
+        if (pd.isnull(col) or str(col).startswith("Unnamed: ")) and df[
+            col
+        ].isnull().all():
+            df.drop(col, axis=1, inplace=True)
+    # Remove data before headers.
     df = remove_data_before_header(df, force_numeric)
     num_rows_before = len(df)
     if num_rows_before:
@@ -92,12 +99,6 @@ def post_process_dataframe(df: pd.DataFrame, force_numeric: bool) -> pd.DataFram
         num_rows_after = len(df)
         df.index = range(num_rows_after)
 
-        # Remove columns that have no header and have only null data.
-        for col in df.columns:
-            if (pd.isnull(col) or str(col).startswith("Unnamed: ")) and len(
-                df[col].value_counts()
-            ) == 0:
-                df.drop(col, axis=1, inplace=True)
     return df
 
 

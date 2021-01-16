@@ -558,7 +558,9 @@ def test_it_creates_a_parse_error_for_corrupt_file():
         "more_null_middle_cols_than_non_null_cols.xlsx",
     ],
 )
-def test_it_creates_a_parse_error_for_no_valid_headers(file_name):
+def test_it_removes_columns_that_have_no_headers_and_have_only_null_data_before_parsing(
+    file_name,
+):
     file_path = os.path.join(DATA_DIR, file_name)
 
     parse_results = list(fables.parse(io=file_path))
@@ -568,16 +570,16 @@ def test_it_creates_a_parse_error_for_no_valid_headers(file_name):
     assert parse_result.name == file_path
 
     tables = parse_result.tables
-    assert len(tables) == 0
+    assert len(tables) == 1
 
     errors = parse_result.errors
-    assert len(errors) == 1
+    assert len(errors) == 0
 
-    error = errors[0]
-    assert error.name == file_path
-
-    assert error.exception_type is ValueError
-    assert "Error during pre-header row removal" in error.message
+    expected_df = pd.DataFrame(
+        columns=["this", "here's", "here's.1"],
+        data=[["that", "something", "some"], ["the other", "else", "other stuff"]],
+    )
+    pd.testing.assert_frame_equal(tables[0].df, expected_df, check_dtype=False)
 
 
 def test_it_parses_a_xls_with_no_extension():
