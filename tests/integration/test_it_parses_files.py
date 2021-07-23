@@ -790,13 +790,13 @@ def test_it_parses_files_using_pandas_kwargs(file_name, pandas_kwargs):
 
     df = tables[0].df
 
-    if pandas_kwargs == {}:
+    if "keep_default_na" not in pandas_kwargs:
         expected_df = pd.DataFrame(
             columns=["a", "b", "c"], data=[[1, 2, np.nan], [4, 5, np.nan]]
         )
         pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
     else:
-        assert pandas_kwargs == {"keep_default_na": False}
+        assert pandas_kwargs["keep_default_na"] is False
         expected_df = pd.DataFrame(
             columns=["a", "b", "c"], data=[[1, 2, "N/A"], [4, 5, "N/A"]]
         )

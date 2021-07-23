@@ -19,8 +19,9 @@ from typing import Any, Dict, IO, Iterable, Union
 
 import xlrd  # type: ignore
 import pandas as pd  # type: ignore
+import cchardet as chardet
 
-from fables.errors import ParseError
+from fables.errors import InsufficientDetectorConfidenceError, ParseError
 from fables.results import ParseResult
 from fables.table import Table
 from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Xlsb, Skip
@@ -30,15 +31,34 @@ ACCEPTED_DELIMITERS = {",", "\t", ";", ":", "|"}
 FRACTION_OF_BLANK_HEADERS_ALLOWED = 0.5
 
 
-def sniff_delimiter(bytesio: IO[bytes]) -> str:
-    # TODO(Thomas: 03/06/2019): Assuming utf-8 for now. Later should consider
-    #                           use of chardet and/or cchardet to auto-detect
-    #                           encoding.
-    sample = bytesio.read(1024 * 4).decode(encoding="utf-8")
+def sniff_delimiter(bytesio: IO[bytes], encoding: str) -> str:
+    if encoding is not None:
+        sample = bytesio.read(1024 * 4).decode(encoding=encoding)
+    else:
+        sample = bytesio.read(1024 * 4).decode()
     bytesio.seek(0)
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample, delimiters="".join(ACCEPTED_DELIMITERS))
     return dialect.delimiter
+
+
+def detect_encoding(bytesio: IO[bytes]) -> str:
+    detection = chardet.detect(bytesio.read())
+    bytesio.seek(0)
+    if detection["confidence"] >= 0.5:
+        return detection["encoding"]
+    else:
+        raise InsufficientDetectorConfidenceError
+
+
+def _extract_data_frame_from_csv(bytesio: IO[bytes], **pandas_kwargs: Dict[str, Any]) -> pd.DataFrame:
+    encoding = pandas_kwargs.get("encoding")
+    try:
+        delimiter = sniff_delimiter(bytesio, encoding)
+    except csv.Error:
+        delimiter = ","
+    df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
+    return df
 
 
 def remove_data_before_header(df: pd.DataFrame, force_numeric: bool) -> pd.DataFrame:
@@ -103,13 +123,18 @@ def post_process_dataframe(df: pd.DataFrame, force_numeric: bool) -> pd.DataFram
 
 
 def parse_csv(
-    bytesio: IO[bytes], *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
+        bytesio: IO[bytes], *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
 ) -> pd.DataFrame:
+    user_supplied_encoding = pandas_kwargs.get("encoding")
     try:
-        delimiter = sniff_delimiter(bytesio)
-    except csv.Error:
-        delimiter = ","
-    df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
+        df = _extract_data_frame_from_csv(bytesio, **pandas_kwargs)
+    except UnicodeDecodeError:
+        if user_supplied_encoding is not None:
+            raise
+        else:
+            bytesio.seek(0)
+            detected_encoding = detect_encoding(bytesio)
+            df = _extract_data_frame_from_csv(bytesio, **{"encoding": detected_encoding, **pandas_kwargs})
     df = post_process_dataframe(df, force_numeric)
     return df
 

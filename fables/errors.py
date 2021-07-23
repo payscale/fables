@@ -29,3 +29,8 @@ class ParseError(Error):
 @dataclass
 class ExtractError(Error):
     pass
+
+
+@dataclass
+class InsufficientDetectorConfidenceError(Error):
+    pass
