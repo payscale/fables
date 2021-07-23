@@ -123,7 +123,7 @@ def post_process_dataframe(df: pd.DataFrame, force_numeric: bool) -> pd.DataFram
 
 
 def parse_csv(
-        bytesio: IO[bytes], *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
+    bytesio: IO[bytes], *, force_numeric: bool = True, pandas_kwargs: Dict[str, Any]
 ) -> pd.DataFrame:
     user_supplied_encoding = pandas_kwargs.get("encoding")
     try:
