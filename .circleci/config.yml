@@ -6,9 +6,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install python dependencies
+          name: upgrade pip
           command: |
             python3 -m venv .venv
+            . .venv/bin/activate
+            pip install --upgrade pip==21.1.3
+      - run:
+          name: install python dependencies
+          command: |
             . .venv/bin/activate
             pip install -r requirements.txt
       - run:
