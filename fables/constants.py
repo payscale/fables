@@ -20,3 +20,5 @@ MAX_FILE_SIZE = 1024 ** 3  # bytes -> 1 GB
 # found to accurately set mimetypes as a result of fables tests. User can
 # reset this var the same as MAX_FILE_SIZE.
 NUM_BYTES_FOR_MIMETYPE_DETECTION = 30000
+
+ENCODING_DETECTION_CONFIDENCE_THRESHOLD = 0.5

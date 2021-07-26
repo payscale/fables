@@ -21,6 +21,7 @@ import xlrd  # type: ignore
 import pandas as pd  # type: ignore
 import cchardet as chardet  # type: ignore
 
+from fables.constants import ENCODING_DETECTION_CONFIDENCE_THRESHOLD
 from fables.errors import InsufficientEncodingDetectorConfidenceError, ParseError
 from fables.results import ParseResult
 from fables.table import Table
@@ -43,10 +44,12 @@ def sniff_delimiter(bytesio: IO[bytes], encoding: Optional[str]) -> str:
 def detect_encoding(bytesio: IO[bytes]) -> str:
     detection = chardet.detect(bytesio.read())
     bytesio.seek(0)
-    if detection["confidence"] >= 0.5:
+    if detection["confidence"] >= ENCODING_DETECTION_CONFIDENCE_THRESHOLD:
         return str(detection["encoding"])
     else:
-        raise InsufficientEncodingDetectorConfidenceError(confidence_threshold=0.5)
+        raise InsufficientEncodingDetectorConfidenceError(
+            confidence_threshold=ENCODING_DETECTION_CONFIDENCE_THRESHOLD
+        )
 
 
 def _extract_data_frame_from_csv(
