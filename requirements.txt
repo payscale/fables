@@ -1,6 +1,7 @@
 astroid==2.1.0
 atomicwrites==1.2.1
 attrs==18.2.0
+cchardet==2.1.7
 chardet==3.0.4
 coverage==4.5.2
 flake8==3.6.0

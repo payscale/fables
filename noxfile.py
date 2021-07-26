@@ -26,6 +26,7 @@ def type_check(session):
 @nox.session(python=py_versions, reuse_venv=True)
 @nox.parametrize("pandas", ["0.25.1", "1.0.1"])
 def test(session, pandas):
-    session.install("pytest", "pytest-cov")
+    session.install("pytest", "pytest-cov", "cchardet")
+    session.install("numpy==1.19.5")
     session.install("-e", ".")
     session.run("pytest", "--cov=fables")
