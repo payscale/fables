@@ -32,5 +32,9 @@ class ExtractError(Error):
 
 
 @dataclass
-class InsufficientDetectorConfidenceError(Error):
-    pass
+class InsufficientEncodingDetectorConfidenceError(Exception):
+    def __init__(self, confidence_threshold: float):
+        self.message = (
+            f"The confidence returned by the encoding detector was"
+            f" less than the threshold {confidence_threshold}."
+        )

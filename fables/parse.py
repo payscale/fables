@@ -15,13 +15,13 @@ the visitor pattern in Python:
 """
 
 import csv
-from typing import Any, Dict, IO, Iterable, Union
+from typing import Any, Dict, IO, Iterable, Optional, Union
 
 import xlrd  # type: ignore
 import pandas as pd  # type: ignore
-import cchardet as chardet
+import cchardet as chardet  # type: ignore
 
-from fables.errors import InsufficientDetectorConfidenceError, ParseError
+from fables.errors import InsufficientEncodingDetectorConfidenceError, ParseError
 from fables.results import ParseResult
 from fables.table import Table
 from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Xlsb, Skip
@@ -31,11 +31,9 @@ ACCEPTED_DELIMITERS = {",", "\t", ";", ":", "|"}
 FRACTION_OF_BLANK_HEADERS_ALLOWED = 0.5
 
 
-def sniff_delimiter(bytesio: IO[bytes], encoding: str) -> str:
-    if encoding is not None:
-        sample = bytesio.read(1024 * 4).decode(encoding=encoding)
-    else:
-        sample = bytesio.read(1024 * 4).decode()
+def sniff_delimiter(bytesio: IO[bytes], encoding: Optional[str]) -> str:
+    encoding = encoding if encoding is not None else "utf-8"
+    sample = bytesio.read(1024 * 4).decode(encoding=encoding)
     bytesio.seek(0)
     sniffer = csv.Sniffer()
     dialect = sniffer.sniff(sample, delimiters="".join(ACCEPTED_DELIMITERS))
@@ -46,13 +44,15 @@ def detect_encoding(bytesio: IO[bytes]) -> str:
     detection = chardet.detect(bytesio.read())
     bytesio.seek(0)
     if detection["confidence"] >= 0.5:
-        return detection["encoding"]
+        return str(detection["encoding"])
     else:
-        raise InsufficientDetectorConfidenceError
+        raise InsufficientEncodingDetectorConfidenceError(confidence_threshold=0.5)
 
 
-def _extract_data_frame_from_csv(bytesio: IO[bytes], **pandas_kwargs: Dict[str, Any]) -> pd.DataFrame:
-    encoding = pandas_kwargs.get("encoding")
+def _extract_data_frame_from_csv(
+    bytesio: IO[bytes], pandas_kwargs: Dict[str, Any]
+) -> pd.DataFrame:
+    encoding = pandas_kwargs.get("encoding", None)
     try:
         delimiter = sniff_delimiter(bytesio, encoding)
     except csv.Error:
@@ -127,14 +127,16 @@ def parse_csv(
 ) -> pd.DataFrame:
     user_supplied_encoding = pandas_kwargs.get("encoding")
     try:
-        df = _extract_data_frame_from_csv(bytesio, **pandas_kwargs)
+        df = _extract_data_frame_from_csv(bytesio, pandas_kwargs)
     except UnicodeDecodeError:
         if user_supplied_encoding is not None:
             raise
         else:
             bytesio.seek(0)
             detected_encoding = detect_encoding(bytesio)
-            df = _extract_data_frame_from_csv(bytesio, **{"encoding": detected_encoding, **pandas_kwargs})
+            df = _extract_data_frame_from_csv(
+                bytesio, {"encoding": detected_encoding, **pandas_kwargs}
+            )
     df = post_process_dataframe(df, force_numeric)
     return df
 
