@@ -14,7 +14,7 @@ the visitor pattern in Python:
 - pypy: https://github.com/mozillazg/pypy/blob/master/pypy/interpreter/astcompiler/ast.py#L3675
 """
 
-import clevercsv
+import clevercsv  # type: ignore
 from typing import Any, Dict, IO, Iterable, Optional, Union
 
 import xlrd  # type: ignore
@@ -39,7 +39,7 @@ def sniff_delimiter(bytesio: IO[bytes], encoding: Optional[str]) -> str:
     bytesio.seek(0)
     sniffer = clevercsv.Sniffer()
     dialect = sniffer.sniff(sample, delimiters="".join(ACCEPTED_DELIMITERS))
-    return dialect.delimiter
+    return str(dialect.delimiter)
 
 
 def detect_encoding(bytesio: IO[bytes]) -> str:
