@@ -14,7 +14,7 @@ the visitor pattern in Python:
 - pypy: https://github.com/mozillazg/pypy/blob/master/pypy/interpreter/astcompiler/ast.py#L3675
 """
 
-import csv
+import clevercsv
 from typing import Any, Dict, IO, Iterable, Optional, Union
 
 import xlrd  # type: ignore
@@ -29,6 +29,7 @@ from fables.tree import FileNode, Directory, Zip, Csv, Xls, Xlsx, Xlsb, Skip
 
 
 ACCEPTED_DELIMITERS = {",", "\t", ";", ":", "|"}
+FALLBACK_DELIMITER = ","
 FRACTION_OF_BLANK_HEADERS_ALLOWED = 0.5
 
 
@@ -36,7 +37,7 @@ def sniff_delimiter(bytesio: IO[bytes], encoding: Optional[str]) -> str:
     encoding = encoding if encoding is not None else "utf-8"
     sample = bytesio.read(1024 * 4).decode(encoding=encoding)
     bytesio.seek(0)
-    sniffer = csv.Sniffer()
+    sniffer = clevercsv.Sniffer()
     dialect = sniffer.sniff(sample, delimiters="".join(ACCEPTED_DELIMITERS))
     return dialect.delimiter
 
@@ -58,8 +59,13 @@ def _extract_data_frame_from_csv(
     encoding = pandas_kwargs.get("encoding", None)
     try:
         delimiter = sniff_delimiter(bytesio, encoding)
-    except csv.Error:
-        delimiter = ","
+    except clevercsv.Error:
+        delimiter = FALLBACK_DELIMITER
+    else:
+        # clevercsv returns the empty string if no delimiter was found in the
+        # file, which is incompatible with pd.read_csv.
+        if not delimiter:
+            delimiter = FALLBACK_DELIMITER
     df = pd.read_csv(bytesio, skip_blank_lines=True, sep=delimiter, **pandas_kwargs)
     return df
 
