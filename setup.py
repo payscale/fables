@@ -4,7 +4,7 @@ import setuptools
 # Note: It would be nice to have a single source of truth for the version; (it exists here and in
 # fables/__init__.py). Here is a nice reference of different ways this can be achieved:
 # https://packaging.python.org/guides/single-sourcing-package-version/
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 
 
 with open("README.md") as f:

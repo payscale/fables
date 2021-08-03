@@ -22,7 +22,6 @@ ABC_DF = pd.DataFrame(columns=["a", "b", "c"], data=[[1, 2, 3], [4, 5, 6]])
 # a,b,c
 # 1,2,{"web-app": {"servlet": [...}
 # 4,5,{"web-app": {"servlet": [...}
-# 7,8,{"web-app": {"servlet": [...}
 ABC_JSON_DF = pd.DataFrame(
     columns=["a", "b", "c"],
     data=[[1, 2, TEST_JSON], [4, 5, TEST_JSON]],
