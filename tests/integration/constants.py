@@ -45,7 +45,7 @@ TEST_JSON = json.dumps(
                         "redirectionClass": "org.cofax.SqlRedirection",
                         "dataStoreName": "cofax",
                         "dataStoreDriver": "com.microsoft.jdbc.sqlserver.SQLServerDriver",
-                        "dataStoreUrl": "jdbc:microsoft:sqlserver://LOCALHOST:1433;DatabaseName=goon",
+                        "dataStoreUrl": "jdbc:microsoft:sqlserver://LOCALHOST:1433;DatabaseName=goon",  # noqa: E501
                         "dataStoreUser": "sa",
                         "dataStorePassword": "dataStoreTestQuery",
                         "dataStoreTestQuery": "SET NOCOUNT ON;select test='test';",
@@ -83,7 +83,7 @@ TEST_JSON = json.dumps(
                         "dataLogMaxSize": "",
                         "removePageCache": "/content/admin/remove?cache=pages&id=",
                         "removeTemplateCache": "/content/admin/remove?cache=templates&id=",
-                        "fileTransferFolder": "/usr/local/tomcat/webapps/content/fileTransferFolder",
+                        "fileTransferFolder": "/usr/local/tomcat/webapps/content/fileTransferFolder",  # noqa: E501
                         "lookInContext": 1,
                         "adminGroupID": 4,
                         "betaServer": True,
