@@ -29,7 +29,9 @@ setuptools.setup(
     ],
     install_requires=[
         "pandas==1.0.1",
+        "cchardet==2.1.7",
         "chardet==3.0.4",
+        "clevercsv==0.7.0",
         "python-magic==0.4.15",
         "xlrd==1.2.0",
         "msoffcrypto-tool==4.6.4",
