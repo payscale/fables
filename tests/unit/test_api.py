@@ -19,9 +19,9 @@ def test_check_file_size_detects_when_file_is_too_large(
     name, size, expected_to_be_too_big, monkeypatch
 ):
     def mock_stat(name):
-        """ Example (we are mocking the 'stat_result' object):
+        """Example (we are mocking the 'stat_result' object):
         >>> stat_result = os.stat('file.txt')
-        >>> print(state_result.st_size)
+        >>> print(stat_result.st_size)
         """
         return MockOSStatResult(size)
 

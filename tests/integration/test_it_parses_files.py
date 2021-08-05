@@ -6,7 +6,7 @@ import pytest
 import pandas as pd
 
 from tests.context import fables
-from tests.integration.constants import DATA_DIR
+from tests.integration.constants import DATA_DIR, TEST_JSON
 
 
 # a,b
@@ -18,6 +18,14 @@ AB_DF = pd.DataFrame(columns=["a", "b"], data=[[1, 2], [3, 4]])
 # 1,2,3
 # 4,5,6
 ABC_DF = pd.DataFrame(columns=["a", "b", "c"], data=[[1, 2, 3], [4, 5, 6]])
+
+# a,b,c
+# 1,2,{"web-app": {"servlet": [...}
+# 4,5,{"web-app": {"servlet": [...}
+ABC_JSON_DF = pd.DataFrame(
+    columns=["a", "b", "c"],
+    data=[[1, 2, TEST_JSON], [4, 5, TEST_JSON]],
+)
 
 
 def _it_parses_a_csv(csv_name, expected_df):
@@ -754,6 +762,17 @@ def test_it_parses_files_with_noisy_opening_rows(file_name, test_callable, expec
     1,2,3
     4,5,6
     """
+    path = os.path.join(DATA_DIR, file_name)
+    test_callable(path, expected_df)
+
+
+@pytest.mark.parametrize(
+    "file_name,test_callable,expected_df",
+    [
+        ("contains_json.csv", _it_parses_a_csv, ABC_JSON_DF),
+    ],
+)
+def test_it_parses_csv_files_with_a_lot_of_json(file_name, test_callable, expected_df):
     path = os.path.join(DATA_DIR, file_name)
     test_callable(path, expected_df)
 
