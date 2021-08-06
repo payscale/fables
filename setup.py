@@ -4,7 +4,7 @@ import setuptools
 # Note: It would be nice to have a single source of truth for the version; (it exists here and in
 # fables/__init__.py). Here is a nice reference of different ways this can be achieved:
 # https://packaging.python.org/guides/single-sourcing-package-version/
-VERSION = "1.2.4"
+VERSION = "1.2.5"
 
 
 with open("README.md") as f:
@@ -29,7 +29,9 @@ setuptools.setup(
     ],
     install_requires=[
         "pandas==1.0.1",
+        "cchardet==2.1.7",
         "chardet==3.0.4",
+        "clevercsv==0.7.0",
         "python-magic==0.4.15",
         "xlrd==1.2.0",
         "msoffcrypto-tool==4.6.4",
