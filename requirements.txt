@@ -14,7 +14,7 @@ msoffcrypto-tool==4.6.4
 mypy==0.720
 mypy-extensions==0.4.1
 nox==2019.4.11
-numpy==1.16.0
+numpy==1.22.0
 pandas==1.0.1
 pluggy==0.8.1
 py==1.7.0
